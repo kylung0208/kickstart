@@ -40,6 +40,7 @@ kickstart/
 - We can do some initial data fetching to build our webpage and don't need to make use of the MetaMask extension on our browser (since most people do not install MetaMask on their browser, we have to ensure those users can still see contents on their screens. They won't even notice there is any problem as long as they don't submit any transaction to our solidity contract.).
 
 ## Project Details
+### Ethereum & Testing
 - Write the smart contract using solidity in the remix editor, then paste it to `ethereum/contracts/xxx.sol`.
     - All the authentication logics should be programmed into our smart contract (ex: Who can manage the contract; who can create a new campaign, etc.) using a custom **restriced() modifier**.
     - The mapping object in solidity can only answer the response of a given key (return a default value if the key is not in the mapping). Since the mapping object cannot be iterated through, we cannot get all the keys nor all the values back from the mapping object. -> use an extra variable to keep track of the number of keys/values if wanted.
@@ -93,4 +94,47 @@ kickstart/
     - Use `JSON.parse()` to parse the compiled contract object interface.
     - Address is the returned deployed address that we copied from the console.log before.
 - Create the javascript Campaign instance **generator** function also using `web3.eth.Contract(abi, address)`. Instead, this time the address is a variable given from outside.
+
+### Multi-page Webpages with React.js and Next.js
+#### Setting Up
+- Next.js requires a top-level folder in the project directory called `pages/` as its multi-page rendering source folder. Therefore, we should create a pages/ folder.
+    - `index.js` can show the **root** page under the multi-page route. Ex: 
+        - `pages/index.js` => `https://<...>/`
+        - `pages/campaigns/index.js` => `https://<...>/campaigns/`
+- Setup the Next-Routes using "next-routes" module in `routes.js`, indicating that which URL should be routed to which webpage.
+- Setup the Next.js server in `server.js`.
+#### Front-end Engineering
+- Each page (.js file in pages/) should have its own React Component class.
+    - Each component should implement its own `render()` method, and it usually returns a JSX object.
+    - Using `this.state` to manage all the state changes in this component. Every component content changes should be managed by the component state.
+        - That is, when there is a change happening, we change the state, then the component will respond to the changed state and render the new content to the webpage.
+- Next.js allows us to use `static async getInitialProps()` to fetch data from the Next server **BEFORE** the React component is initialized.
+    - The returned data from `getInitialProps()` will automatically be added to the component's `this.props` child variable.
+    ```js
+    class CampaignIndex extends Component {
+        // getInitialProps() runs before CampaignIndex is initialized.
+        static async getInitialProps() {
+            const campaigns = await ...
+
+            return { campaigns }
+        }
+
+        // can access the campaign variable from `getInitialProps()` by `this.props.campaigns`
+        renderCampaigns() {
+            const items = this.props.campaigns.map(address => {
+                return {
+                    ...
+                }
+            });
+        }
+    }
+    ```
+- Use **SemanticUI-React** for easy implementing nice-looking components.
+- Create Header layout in `components/Header.js` for reusing the header layout component in multiple pages.
+- `import { Link } from '../routes';` can help us traverse through different pages using 
+    ```html
+    <Link route="...">
+        <a>xxx</a>
+    </Link>
+    ```
 
