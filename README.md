@@ -127,6 +127,12 @@ kickstart/
                 }
             });
         }
+
+        // Should implement its own render() method.
+        render() {
+            ...
+            return ... // return JSX object
+        }
     }
     ```
 - Use **SemanticUI-React** for easy implementing nice-looking components.
